@@ -1,3 +1,4 @@
+// DOM elements
 const board = document.getElementById('board');
 const scoreDisplay = document.getElementById('score');
 const gameMessage = document.getElementById('game-message');
@@ -6,14 +7,15 @@ const restartButton = document.getElementById('restart');
 let score = 0;
 let tiles = [];
 
+// Initialize the game
 function initializeGame() {
-    // Create 4x4 grid
     tiles = Array(4).fill().map(() => Array(4).fill(null));
     addNewTile();
     addNewTile();
     updateBoard();
 }
 
+// Add a new tile to the board
 function addNewTile() {
     let emptyCells = [];
     tiles.forEach((row, rIndex) => {
@@ -26,6 +28,7 @@ function addNewTile() {
     tiles[r][c] = Math.random() < 0.9 ? 2 : 4;
 }
 
+// Update the board UI
 function updateBoard() {
     board.innerHTML = '';
     tiles.forEach(row => {
@@ -43,14 +46,15 @@ function updateBoard() {
     checkGameOver();
 }
 
+// Handle tile movement in the specified direction
 function move(direction) {
     let moved = false;
-    // Movement logic depending on direction
     for (let i = 0; i < 4; i++) {
-        let line = tiles[i].filter(t => t !== null);
-        if (direction === 'up' || direction === 'down') line = tiles.map(row => row[i]).filter(t => t !== null);
-        if (direction === 'right' || direction === 'down') line.reverse();
+        let line = direction === 'up' || direction === 'down'
+            ? tiles.map(row => row[i]).filter(t => t !== null)
+            : tiles[i].filter(t => t !== null);
 
+        if (direction === 'right' || direction === 'down') line.reverse();
         for (let j = 0; j < line.length - 1; j++) {
             if (line[j] === line[j + 1]) {
                 line[j] *= 2;
@@ -60,8 +64,8 @@ function move(direction) {
                 moved = true;
             }
         }
-
         if (direction === 'right' || direction === 'down') line.reverse();
+
         if (direction === 'up' || direction === 'down') tiles.forEach((row, index) => row[i] = line[index] || null);
         else tiles[i] = line.concat(Array(4 - line.length).fill(null));
     }
@@ -69,6 +73,7 @@ function move(direction) {
     updateBoard();
 }
 
+// Check for game over conditions
 function checkGameOver() {
     if (tiles.flat().includes(null)) return;
     for (let i = 0; i < 4; i++) {
@@ -80,6 +85,7 @@ function checkGameOver() {
     gameMessage.querySelector('p').textContent = 'Game Over!';
 }
 
+// Key events for tile movement
 document.addEventListener('keydown', (e) => {
     switch (e.key) {
         case 'ArrowUp': move('up'); break;
